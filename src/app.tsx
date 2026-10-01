@@ -704,12 +704,10 @@ function Chat() {
               contents={
                 <div className="flex flex-wrap justify-center gap-2">
                   {[
-                   
-  "Plan Oracle to PostgreSQL migration for CUSTOMER table with 5 million rows",
-  "Start a migration workflow for INVENTORY table from Oracle to PostgreSQL",
-  "Generate SQL validation checks for source and target reconciliation",
-  "Identify migration risks for timestamp, duplicate and null value issues"
-
+                    "Plan Oracle to PostgreSQL migration for CUSTOMER table with 5 million rows",
+                    "Start a migration workflow for INVENTORY table from Oracle to PostgreSQL",
+                    "Generate SQL validation checks for source and target reconciliation",
+                    "Identify migration risks for timestamp, duplicate and null value issues"
                   ].map((prompt) => (
                     <Button
                       key={prompt}

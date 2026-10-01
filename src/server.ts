@@ -72,14 +72,26 @@ Important behavior:
               .describe("Source database, for example Oracle, MySQL, MongoDB"),
             targetSystem: z
               .string()
-              .describe("Target database, for example PostgreSQL, MongoDB, DynamoDB"),
+              .describe(
+                "Target database, for example PostgreSQL, MongoDB, DynamoDB"
+              ),
             dataModel: z
-              .enum(["relational", "document", "key-value", "wide-column", "graph", "search", "unknown"])
+              .enum([
+                "relational",
+                "document",
+                "key-value",
+                "wide-column",
+                "graph",
+                "search",
+                "unknown"
+              ])
               .optional()
               .describe("Database model type"),
             tableOrCollection: z
               .string()
-              .describe("Main table, collection, index, graph label, or business domain"),
+              .describe(
+                "Main table, collection, index, graph label, or business domain"
+              ),
             estimatedRowsOrDocuments: z
               .number()
               .optional()
@@ -168,15 +180,27 @@ Important behavior:
             "Generate validation queries for relational or non-relational database migration reconciliation.",
           inputSchema: z.object({
             databaseType: z
-              .enum(["relational", "mongodb", "dynamodb", "cassandra", "redis", "elasticsearch", "unknown"])
+              .enum([
+                "relational",
+                "mongodb",
+                "dynamodb",
+                "cassandra",
+                "redis",
+                "elasticsearch",
+                "unknown"
+              ])
               .describe("Type of database/query style"),
             objectName: z
               .string()
-              .describe("Table, collection, index, keyspace table, or object name"),
+              .describe(
+                "Table, collection, index, keyspace table, or object name"
+              ),
             keyField: z
               .string()
               .optional()
-              .describe("Primary key, document id, partition key, or unique business key")
+              .describe(
+                "Primary key, document id, partition key, or unique business key"
+              )
           }),
 
           execute: async ({ databaseType, objectName, keyField }) => {
@@ -239,14 +263,23 @@ Important behavior:
             "Generate migration query/script examples for SQL to NoSQL or NoSQL to SQL database migration.",
           inputSchema: z.object({
             migrationDirection: z
-              .enum(["sql-to-nosql", "nosql-to-sql", "sql-to-sql", "nosql-to-nosql"])
+              .enum([
+                "sql-to-nosql",
+                "nosql-to-sql",
+                "sql-to-sql",
+                "nosql-to-nosql"
+              ])
               .describe("Direction of migration"),
             sourceSystem: z
               .string()
-              .describe("Source database, for example Oracle, PostgreSQL, MongoDB"),
+              .describe(
+                "Source database, for example Oracle, PostgreSQL, MongoDB"
+              ),
             targetSystem: z
               .string()
-              .describe("Target database, for example MongoDB, PostgreSQL, DynamoDB"),
+              .describe(
+                "Target database, for example MongoDB, PostgreSQL, DynamoDB"
+              ),
             sourceObject: z
               .string()
               .describe("Source table, collection, index, or object name"),
@@ -256,11 +289,15 @@ Important behavior:
             keyField: z
               .string()
               .optional()
-              .describe("Primary key, document id, partition key, or unique business key"),
+              .describe(
+                "Primary key, document id, partition key, or unique business key"
+              ),
             sampleFields: z
               .array(z.string())
               .optional()
-              .describe("Important fields to migrate, for example customer_id, name, email")
+              .describe(
+                "Important fields to migrate, for example customer_id, name, email"
+              )
           }),
 
           execute: async ({
@@ -291,9 +328,9 @@ Important behavior:
   {
     _id: "<${key}>",
 ${fields
-                    .filter((field) => field !== key)
-                    .map((field) => `    ${field}: "<${field}>",`)
-                    .join("\n")}
+  .filter((field) => field !== key)
+  .map((field) => `    ${field}: "<${field}>",`)
+  .join("\n")}
     migrated_at: new Date()
   }
 ]);`,
@@ -328,9 +365,9 @@ ${fields.map((field) => `  ${field}: 1,`).join("\n")}
                 relationalTableExample: `CREATE TABLE ${targetObject} (
   ${key} VARCHAR(100) PRIMARY KEY,
 ${fields
-                    .filter((field) => field !== key)
-                    .map((field) => `  ${field} VARCHAR(255),`)
-                    .join("\n")}
+  .filter((field) => field !== key)
+  .map((field) => `  ${field} VARCHAR(255),`)
+  .join("\n")}
   migrated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );`,
                 insertSqlExample: `INSERT INTO ${targetObject} (${fields.join(", ")})
@@ -399,7 +436,16 @@ FROM staging_${targetObject};`,
             sourceSystem: z.string(),
             targetSystem: z.string(),
             workloadType: z
-              .enum(["oltp", "olap", "event-driven", "search", "cache", "analytics", "mixed", "unknown"])
+              .enum([
+                "oltp",
+                "olap",
+                "event-driven",
+                "search",
+                "cache",
+                "analytics",
+                "mixed",
+                "unknown"
+              ])
               .optional(),
             dataVolume: z.string().optional(),
             consistencyRequirement: z
@@ -457,7 +503,13 @@ FROM staging_${targetObject};`,
               .optional()
               .describe("Expected scale, volume or traffic"),
             consistencyNeed: z
-              .enum(["strong", "eventual", "read-heavy", "write-heavy", "unknown"])
+              .enum([
+                "strong",
+                "eventual",
+                "read-heavy",
+                "write-heavy",
+                "unknown"
+              ])
               .optional()
           }),
 

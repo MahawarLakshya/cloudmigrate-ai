@@ -51,10 +51,35 @@ export class ChatAgent extends AIChatAgent<Env> {
     const workersai = createWorkersAI({ binding: this.env.AI });
 
     const result = streamText({
-      model: workersai("@cf/moonshotai/kimi-k2.7-code", {
+      model: workersai("@cf/google/gemma-4-26b-a4b-it", {
         sessionAffinity: this.sessionAffinity
       }),
-      system: `You are a helpful assistant that can understand images. You can check the weather, get the user's timezone, run calculations, and schedule tasks. When users share images, describe what you see and answer questions about them.
+      system: `You are CloudMigrate AI, an AI-powered database migration copilot built on Cloudflare Agents.
+
+You help engineers plan and validate cloud data migrations.
+
+You specialize in:
+- Oracle to Cloud migration
+- Oracle Data Foundation Cloud Service style migration planning
+- SQL validation
+- schema mapping
+- reconciliation checks
+- data quality checks
+- rollback planning
+- production migration readiness
+
+When the user describes a migration problem, you should:
+1. Identify source system, target system, table/domain, data volume and risk.
+2. Create a practical migration plan.
+3. Suggest SQL validation and reconciliation checks.
+4. Explain data quality risks.
+5. Recommend a safe rollout strategy.
+6. If the user asks to start or run a migration workflow, use the startMigrationWorkflow tool.
+
+Important:
+- Never claim that a real database was modified.
+- This project simulates migration workflow execution for assignment/demo purposes.
+- Be concise, technical and implementation-focused.
 
 ${getSchedulePrompt({ date: new Date() })}
 
@@ -68,7 +93,110 @@ If the user asks to schedule a task, use the schedule tool to schedule the task.
       tools: {
         // MCP tools from connected servers
         ...mcpTools,
+        //Cloud migration tool
+        startMigrationWorkflow: tool({
+          description:
+            "Start a simulated cloud data migration workflow. Use this when the user asks to start, run, execute, validate, or simulate a database migration.",
+          inputSchema: z.object({
+            sourceSystem: z
+              .string()
+              .describe("Source database or system, for example Oracle"),
+            targetSystem: z
+              .string()
+              .describe("Target database or system, for example PostgreSQL or Oracle Cloud"),
+            tableName: z
+              .string()
+              .describe("Main table or business domain being migrated"),
+            estimatedRows: z
+              .number()
+              .optional()
+              .describe("Estimated number of rows being migrated"),
+            migrationGoal: z
+              .string()
+              .optional()
+              .describe("Business or technical goal of the migration")
+          }),
+          execute: async ({
+            sourceSystem,
+            targetSystem,
+            tableName,
+            estimatedRows,
+            migrationGoal
+          }) => {
+            const rows = estimatedRows ?? 1000000;
 
+            const workflow = {
+              workflowName: "CloudMigrate AI Migration Workflow",
+              sourceSystem,
+              targetSystem,
+              tableName,
+              estimatedRows: rows,
+              migrationGoal:
+                migrationGoal ??
+                `Migrate ${tableName} from ${sourceSystem} to ${targetSystem}`,
+              status: "SUCCESS",
+              steps: [
+                {
+                  step: 1,
+                  name: "Requirement Analysis",
+                  status: "completed",
+                  output: `Identified migration from ${sourceSystem} to ${targetSystem} for ${tableName}.`
+                },
+                {
+                  step: 2,
+                  name: "Source Schema Validation",
+                  status: "completed",
+                  output: `Validated source metadata and nullable/key column assumptions for ${tableName}.`
+                },
+                {
+                  step: 3,
+                  name: "Column Mapping",
+                  status: "completed",
+                  output:
+                    "Generated logical mapping for primary keys, business columns, timestamps and audit fields."
+                },
+                {
+                  step: 4,
+                  name: "Migration Simulation",
+                  status: "completed",
+                  output: `Simulated movement of ${rows.toLocaleString()} rows. No real database was modified.`
+                },
+                {
+                  step: 5,
+                  name: "Reconciliation",
+                  status: "completed",
+                  output:
+                    "Compared source count, target count, checksum strategy and null distribution checks."
+                },
+                {
+                  step: 6,
+                  name: "Migration Report",
+                  status: "completed",
+                  output:
+                    "Generated readiness summary with validation SQL, risks and rollback recommendation."
+                }
+              ],
+              validationSql: [
+                `SELECT COUNT(*) AS source_count FROM ${tableName};`,
+                `SELECT COUNT(*) AS target_count FROM ${tableName};`,
+                `SELECT COUNT(*) AS null_key_count FROM ${tableName} WHERE id IS NULL;`,
+                `SELECT id, COUNT(*) FROM ${tableName} GROUP BY id HAVING COUNT(*) > 1;`
+              ],
+              risks: [
+                "Primary key mismatch between source and target",
+                "Data type conversion issues",
+                "Timezone differences in timestamp columns",
+                "Duplicate records",
+                "Nulls in mandatory business fields",
+                "Partial load or failed batch replay"
+              ],
+              recommendation:
+                "Run migration in batches, validate after each batch, reconcile counts and checksums, then perform final cutover only after zero critical mismatches."
+            };
+
+            return workflow;
+          }
+        }),
         // Server-side tool: runs automatically on the server
         getWeather: tool({
           description: "Get the current weather for a city",
